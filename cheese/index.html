@@ -1,0 +1,158 @@
+<!doctype HTML>
+<html>
+	<head>
+		<style>
+			body{
+				margin:0px;
+				background:#012;
+				overflow:hidden;
+                width:100%;
+                height:100%;
+			}
+			canvas{
+                position:absolute;
+                width:100%;
+                height:100%;
+			}
+		</style>
+	</head>
+	<body onload="initialize()" onresize="reshape()">
+		<canvas id="screen"></canvas>
+		<script>
+            html = document.documentElement;
+            cx=html.clientWidth/2;
+            cy=html.clientHeight/2;
+            pi=Math.acos(-1);
+            var timer;
+            var particles=[],vertex=[0,0,0,0,0,0,0,0];
+            var GWaveIntensity=8000,multiColor=1;
+            function initialize(){
+              canvas1 = document.querySelector("#screen");
+              ctx1 = canvas1.getContext("2d");
+              ms=0;
+              reshape();
+              loadScene();
+              render();
+            }
+
+            function interpolate(x1,x2,deg){
+              return x1*(1-deg)+x2*deg;
+            }
+
+            function spawnParticle(triggerGWave){
+              vertex[4]=5; //radius1
+              vertex[6]=5+25*Math.random(); //radius2
+              vertex[7]=vertex[4]; //radius interpolated
+              vertex[0]=-vertex[4]/2+Math.random()*cx*2; //x
+              vertex[1]=-vertex[4]/2+Math.random()*cy*2; //y
+              vertex[2]=0; //vx
+              vertex[3]=0; //vy
+              if(multiColor){
+                vertex[5]=pi*4/100*vertex[4]; //color
+              }else{
+                vertex[5]=-5;
+              }
+              if(triggerGWave){
+                for(i=0;i<particles.length;++i){
+                  p=Math.atan2(vertex[0]-particles[i][0],vertex[1]-particles[i][1]);
+                  dist=1+Math.sqrt((vertex[0]-particles[i][0])*(vertex[0]-particles[i][0])+(vertex[1]-particles[i][1])*(vertex[1]-particles[i][1]));
+                  particles[i][2]+=Math.sin(p)*GWaveIntensity/dist/particles[i][4];
+                  particles[i][3]+=Math.cos(p)*GWaveIntensity/dist/particles[i][4];
+                }
+              }
+              particles.push(vertex.slice());
+            }
+
+            function destroyParticle(index,triggerGWave){
+              if(triggerGWave){
+                for(i=0;i<particles.length;++i){
+                  if(i!=index){
+                    p=Math.atan2(particles[index][0]-particles[i][0],particles[index][1]-particles[i][1]);
+                    dist=1+Math.sqrt((particles[index][0]-particles[i][0])*(particles[index][0]-particles[i][0])+(particles[index][1]-particles[i][1])*(particles[index][1]-particles[i][1]));
+                    particles[i][2]-=Math.sin(p)*GWaveIntensity/dist/particles[i][4];
+                    particles[i][3]-=Math.cos(p)*GWaveIntensity/dist/particles[i][4];
+                  }
+                }
+              }
+              particles.splice(index,1);
+            }
+
+            function loadScene(){
+              var initParticles=6000,zeroInitialVelocities=1;
+              particles=[];
+              for(i=0;i<initParticles;++i) spawnParticle();
+              if(zeroInitialVelocities){
+                for(i=0;i<particles.length;++i){
+                  particles[i][2]=0;
+                  particles[i][3]=0;
+                }
+              }
+            }
+
+            function render(){
+
+              requestAnimationFrame(render);
+              var x,y,x1,y1,x2,y2,red,green,blue,col;				
+
+              ms++;
+              GWaveIntensity=3000+Math.cos(ms/90)*1800;
+              ctx1.fillStyle="#012";
+              ctx1.globalAlpha=.2;
+              ctx1.fillRect ( 0 , 0 , cx*2 , cy*2 );
+
+              if(!multiColor){
+                col=particles[0][5];
+                red=(parseInt((.5+Math.sin(col)/2)*255)).toString(16);
+                green=(parseInt((.5+Math.cos(col)/2)*255)).toString(16);
+                blue=(parseInt((.5-Math.sin(col)/2)*255)).toString(16);
+                if(red.length<2)red="0"+red;
+                if(green.length<2)green="0"+green;
+                if(blue.length<2)blue="0"+blue;
+                ctx1.fillStyle="#"+red+green+blue;
+              }
+
+              for(i=0;i<particles.length;++i){
+                particles[i][7]=interpolate(particles[i][4],particles[i][6],.5-Math.cos(ms/110)/2)
+                ctx1.globalAlpha=1/(1+particles[i][7]/5);
+                particles[i][2]/=1.25;
+                particles[i][3]/=1.25;
+                particles[i][0]+=particles[i][2];
+                particles[i][1]+=particles[i][3];
+
+                if(multiColor){
+                  particles[i][5]=pi*4/75*particles[i][7];
+                  col=particles[i][5]+ms/100;
+                  red=(parseInt((.5+Math.sin(col)/2)*255)).toString(16);
+                  green=(parseInt((.5+Math.cos(col)/2)*255)).toString(16);
+                  blue=(parseInt((.5-Math.sin(col)/2)*255)).toString(16);
+                  if(red.length<2)red="0"+red;
+                  if(green.length<2)green="0"+green;
+                  if(blue.length<2)blue="0"+blue;
+                  ctx1.fillStyle="#"+red+green+blue;
+                }
+
+                drawPoint(particles[i][0],particles[i][1],particles[i][7],1);
+              }
+              for(var i=0;i<parseInt(5+Math.cos(ms/140)*3);++i){
+                if(particles.length)destroyParticle(parseInt(Math.random()*particles.length),1);
+                spawnParticle(1);
+              }
+            }
+
+
+            function drawPoint(x,y,weight,cvs){
+              ctx1.fillRect(x,y,weight,weight);
+            }
+
+            function reshape(){
+              canvas1.width=html.clientWidth;
+              canvas1.height=html.clientHeight;
+              cx=canvas1.width/2;
+              cy=canvas1.height/2;
+            }
+            html.addEventListener("resize",function(){
+              reshape();
+            });
+		</script>
+	</body>
+</html>

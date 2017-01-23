@@ -1,0 +1,39 @@
+ <?php
+ echo '<table id="matable" class="table" style="max-width: 100%;">'."\n";
+ echo '<th style="display: table-header-group;" >customers</th>'."\n";
+
+ echo '<tbody>'."\n";
+ echo '<tr style="page-break-inside: avoid;">';
+ echo '<td><b>id</b></td>';
+ echo '<td><b>first_name</b></td>';
+  echo '<td><button onclick="insererLigne()"><img src="../ETT/img/add.jpg"       width="20px" height="20px" ></img></button></td>
+
+  <script> 
+
+  function insererLigne(){
+  var cell, ligne;
+
+
+   var tableau = document.getElementById("matable");
+
+   var nbLignes = tableau.rows.length;
+
+
+    ligne = tableau.insertRow(-1);  
+
+    cell = ligne.insertCell(0);
+    cell.innerHTML ="<input type="text">";
+
+    cell = ligne.insertCell(1);
+    cell.innerHTML = "<input type="text">";
+
+    cell = ligne.insertCell(2);
+     cell.innerHTML =  "<input type="text">";
+
+   }
+
+   </script>';
+   echo '</tr>'."\n";
+   echo '</tbody>'."\n";
+   echo '</table>'."\n";
+   ?>

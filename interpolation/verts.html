@@ -1,0 +1,15 @@
+<?
+	$infile = @fopen("sword2.obj", "r");
+	$outfile = @fopen("verts", "w");
+    	fputs($outfile, "[");
+	while (($buffer = fgets($infile, 4096)) !== false) {
+        	if(substr($buffer,0,2)=='v '){
+			$buffer=str_replace("v  ","[",$buffer);
+                        $buffer=str_replace(" ",",",$buffer);
+			$buffer=str_replace("\r\n","],",$buffer);
+			fputs($outfile, $buffer);
+		}
+	}
+	fputs($outfile,"]");
+	echo "done.\n";
+?>

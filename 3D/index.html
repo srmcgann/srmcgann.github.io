@@ -1,0 +1,714 @@
+<!doctype HTML>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>3D Engine Principles</title>
+		<meta name="description" content="3D Engine Principles">
+		<meta name="keywords" content="HTML5,canvas,JavaScript,3D,engine">
+    </head>
+    <body>
+        <div id="main">
+            <div id="header">
+                Making a Basic 3D Engine
+            </div>
+            <div class="text">
+                3D engines come in many shapes and sizes and are used to render graphics in video games, CAD programs, medical imaging software, and countless other applicatoins. Some 3D engines involve OpenGL or DirectX and are highly complex, harnessing the power of the GPU and shaders to control colors, lighting, textures, shadows, reflections, and more.<br><br>
+                
+                But a 3D engine does not need to be complex. Here we will explore a very simple 3D engine and see it in action.<br>
+            </div>
+            <canvas id="trees"></canvas>
+            <div class="text">
+                Every 3D engine must perform at least 3 functions:<br><br>
+                <li>Translation (moving an object)</li>
+                <li>Rotation</li>
+                <li>and Projection</li><br>
+                First, let's look at translation, the simplest of the three.<br><br>
+                <img src="translation.jpg" class="medium_image" style="float:right;margin-left:20px;">
+                Translation simply moves an object a specific distance in some direction. In this demonstration, we will be using shapes that have a "master" position, and then sub-positions for each vertex which are relative to the master position. To translate an object's position we could move every vertex, but it's much simpler to move the master position, then all the vertices follow.<br><br>
+            </div>
+                <pre class="line-numbers" style="width:665px;">
+<code class="language-javascript">function translateShape(x, y, z, shape){
+    
+    shape.x += x;
+    shape.y += y;
+    shape.z += z;
+}</code></pre><br><hr><div class="text">
+                <img src="rotation.jpg" class="medium_image" style="float:left;margin-right:20px;">
+                <br><br><br>Next, let's look at rotation. There are several ways to rotate a vertex. A naïve approach might be to use trig, like so:
+				<div class="clear"></div>
+                <pre class="line-numbers" style="width:665px;margin-top:20px;">
+<code class="language-javascript">function trig_rotate(vert, roll, pitch, yaw){
+
+	var d, p, x=vert.x, y=vert.y, z=vert.z;
+	var {cos, sin, sqrt, atan2} = Math;
+	d = sqrt(x*x+y*y);
+	p = atan2(x,y);
+	x = sin(p-roll)*d;
+	y = cos(p-roll)*d;
+	d = sqrt(y*y+z*z);
+	p = atan2(y,z);
+	y = sin(p+pitch)*d;
+	z = cos(p+pitch)*d;
+	d = sqrt(x*x+z*z);
+	p = atan2(x,z);
+	x = sin(p+yaw)*d;
+	z = cos(p+yaw)*d;
+	return {x:x, y:y, z:z};
+}
+</code></pre>
+                <br>...which works, but involves several expensive calls to atan2 and sqrt. There is a better way. Enter matrices! Let us look at a function that does the same thing without calls to atan2 and sqrt.
+            </div>
+                <pre class="line-numbers" style="width:665px;">
+<code class="language-javascript">function matrix_rotate(vert, roll, pitch, yaw) {
+	
+	var {cos, sin} = Math;
+
+	var cosa = cos(roll);
+	var sina = sin(roll);
+	var cosb = cos(yaw);
+	var sinb = sin(yaw);
+	var cosc = cos(-pitch);
+	var sinc = sin(-pitch);
+
+	var xx = cosa*cosb;
+	var xy = cosa*sinb*sinc - sina*cosc;
+	var xz = cosa*sinb*cosc + sina*sinc;
+	var yx = sina*cosb;
+	var yy = sina*sinb*sinc + cosa*cosc;
+	var yz = sina*sinb*cosc - cosa*sinc;
+	var zx = -sinb;
+	var zy = cosb*sinc;
+	var zz = cosb*cosc;
+
+	var px = xx*vert.x + xy*vert.y + xz*vert.z;
+	var py = yx*vert.x + yy*vert.y + yz*vert.z;
+	var pz = zx*vert.x + zy*vert.y + zz*vert.z;
+	
+	return {x:px, y:py, z:pz};
+}
+</code></pre>
+<div class="text"><br>In a <a href="http://cantelope.org/3D/rotation_test.php" target="_blank">benchmark test</a>, the matrix function beats the trig function hands down, averaging about 300% faster.<br></div><br><hr>
+            <div class="text">
+                Finally, let us look at 3D projection.<br><br>
+                The task is to project, or "rasterize" 3 dimensional coordinates onto a 2 dimensional plane, which can then be displayed on a screen. One way this can be done is by tracing straight lines from the camera to the 3D object, and finding the points of intersection with a plane in front of the camera.<br><br>
+                <img src="3D_Projection.jpg" class="full_image"><br><br>
+                Let's look at a function that projects a single 3D vertex onto a 2D screen, with respect to the camera's position and rotation.
+            </div>
+            <script src="prism.js"></script>
+            <pre class="line-numbers" style="width:665px;">
+<code class="language-javascript">function project3D(x, y, z, vars){
+
+  var p,d
+  var {cos, sin, sqrt, atan2} = Math;
+  
+  // apply camera position
+  x -= vars.camX;
+  y -= vars.camY;
+  z -= vars.camZ;
+  
+  // apply camera rotation
+  p = atan2(x,z);
+  d = sqrt(x*x+z*z);
+  x = sin(p-vars.yaw)*d;
+  z = cos(p-vars.yaw)*d;
+  p = atan2(y,z);
+  d = sqrt(y*y+z*z);
+  y = sin(p-vars.pitch)*d;
+  z = cos(p-vars.pitch)*d;
+  
+  // create invisible horizontal line in front of camera
+  var x1 = -100,y1=1,x2=100,y2=1;
+  
+  // create invisible line from camera to to vertex
+  var x3 = 0,y3 = 0,x4 = x,y4 = z;
+  
+  // find intersection between the two lines, if any
+  var uc = (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
+  var ua = ((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/uc;
+  var ub = ((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/uc;
+  
+  // if intersection occurs within both line segments...
+  // return the 2D projected coordinates,
+  // or else the vertex is outside of the field of vision
+  if(ua>0&&ua<1&&ub>0&&ub<1){
+    return {
+      x:vars.cx+(x1+ua*(x2-x1))*vars.scale,
+      y:vars.cy+y/z*vars.scale,
+      d:sqrt(x*x+y*y+z*z)
+    };
+  }else{
+    return {d:-1};
+  }
+}</code></pre>
+    <div class="text">
+        You may notice that the function accepts 4 parameters:<br>x, y, z, and vars. The vars parameter will be an object with at least 6 members: camX, camY, camZ, cx, cy, and scale. cx & cy are just the center of the screen. The value of scale determines how much "perspective" is seen in the output. a large scale will result in more isomorphic rendering, whereas a small scale will cause objects in the distance to shrink rapidly.<br><br>
+        The function returns one of two possible objects, depending on whether the vertex is in front of the camera or not. If in front, the function returns the projected positions x and y on a 2D plane in front of the camera, as well as d, the distance to the vertex, which is useful for say, adjusting line weights, as will be shown. If the vertex is behind the camera, the function simply returns d = -1. So to render a scene, we need only check that d != -1 for each vertex, then connect them.
+        </div>
+        <br><hr>
+        <div class="text"><br>The following program uses translation, rotation, and projection to display an animated cube. The full code is shown below.<br><br>
+    </div>
+        <canvas id="canvas"></canvas><br><br>
+
+            <pre class="line-numbers" style="width:665px;">
+<code class="language-javascript">function translateShape(x, y, z, shape){
+    
+    shape.x += x;
+    shape.y += y;
+    shape.z += z;
+}
+
+
+function matrix_rotate(vert, roll, pitch, yaw) {
+	
+	var {cos, sin} = Math;
+	
+	var cosa = cos(roll);
+	var sina = sin(roll);
+	var cosb = cos(yaw);
+	var sinb = sin(yaw);
+	var cosc = cos(-pitch);
+	var sinc = sin(-pitch);
+
+	var xx = cosa*cosb;
+	var xy = cosa*sinb*sinc - sina*cosc;
+	var xz = cosa*sinb*cosc + sina*sinc;
+	var yx = sina*cosb;
+	var yy = sina*sinb*sinc + cosa*cosc;
+	var yz = sina*sinb*cosc - cosa*sinc;
+	var zx = -sinb;
+	var zy = cosb*sinc;
+	var zz = cosb*cosc;
+
+	var px = xx*vert.x + xy*vert.y + xz*vert.z;
+	var py = yx*vert.x + yy*vert.y + yz*vert.z;
+	var pz = zx*vert.x + zy*vert.y + zz*vert.z;
+	
+	return {x:px, y:py, z:pz};
+}
+			
+			
+function project3D(x, y, z, vars){
+
+  var p,d
+  var {cos, sin, sqrt, atan2} = Math;
+  x -= vars.camX;
+  y -= vars.camY;
+  z -= vars.camZ;
+  p = atan2(x,z);
+  d = sqrt(x*x+z*z);
+  x = sin(p-vars.yaw)*d;
+  z = cos(p-vars.yaw)*d;
+  p = atan2(y,z);
+  d = sqrt(y*y+z*z);
+  y = sin(p-vars.pitch)*d;
+  z = cos(p-vars.pitch)*d;
+  var x1 = -100,y1 = 1,x2 = 100,y2 = 1,x3 = 0,y3 = 0,x4 = x,y4 = z;
+  var uc = (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
+  if(!uc) return {x:0,y:0,d:-1};
+  var ua=((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/uc;
+  var ub=((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/uc;
+  if(ua>0&&ua<1&&ub>0&&ub<1){
+    return {
+      x:vars.cx+(x1+ua*(x2-x1))*vars.scale,
+      y:vars.cy+y/z*vars.scale,
+      d:sqrt(x*x+y*y+z*z)
+    };
+  }else{
+    return {d:-1};
+  }
+}
+
+
+function frame(vars){
+
+    if(vars === undefined){
+        var vars={};
+        vars.canvas = document.querySelector("#canvas");
+        vars.ctx = vars.canvas.getContext("2d");
+        vars.canvas.width = 758;
+        vars.canvas.height = 500;
+        vars.frameNo=0;
+        vars.camX = 1;
+        vars.camY = 0;
+        vars.camZ = -6;
+        vars.pitch = 0;
+        vars.yaw = 0;
+        vars.roll = 0;
+        vars.cx=vars.canvas.width/2;
+        vars.cy=vars.canvas.height/2;
+        vars.scale=500;
+        vars.shape=loadCube(-1,0,1);
+    }
+
+    vars.frameNo++;
+    requestAnimationFrame(function() {
+      frame(vars);
+    });
+
+    vars.ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    var x,y,z,point1,point2;
+    vars.ctx.strokeStyle="#ff0";
+
+    x=Math.sin(vars.frameNo/40)/20;
+    y=0;
+    z=Math.cos(vars.frameNo/40)/20;
+    translateShape(x,y,z,vars.shape);
+
+    for(var i=0;i&lt;vars.shape.segs.length;++i){
+        vars.shape.segs[i].a=matrix_rotate(vars.shape.segs[i].a,0,-0.025,0.02);
+        vars.shape.segs[i].b=matrix_rotate(vars.shape.segs[i].b,0,-0.025,0.02);
+        x=vars.shape.x+vars.shape.segs[i].a.x;
+        y=vars.shape.y+vars.shape.segs[i].a.y;
+        z=vars.shape.z+vars.shape.segs[i].a.z;
+        point1=project3D(x,y,z,vars);
+        if(point1.d != -1){
+            x=vars.shape.x+vars.shape.segs[i].b.x;
+            y=vars.shape.y+vars.shape.segs[i].b.y;
+            z=vars.shape.z+vars.shape.segs[i].b.z;
+            point2=project3D(x,y,z,vars);
+            if(point2.d != -1){
+                vars.ctx.lineWidth=50/(1+point1.d);
+                vars.ctx.beginPath();
+                vars.ctx.moveTo(point1.x,point1.y);
+                vars.ctx.lineTo(point2.x,point2.y);
+                vars.ctx.stroke();
+            }
+        }
+    }
+}
+
+
+function Vert(x,y,z){
+    this.x = x;
+    this.y = y;
+    this.z = z;
+}
+
+
+function Seg(x1,y1,z1,x2,y2,z2){
+    this.a = new Vert(x1,y1,z1);
+    this.b = new Vert(x2,y2,z2);
+}
+
+
+function loadCube(x,y,z){
+
+    var shape={};
+    shape.x=x;
+    shape.y=y;
+    shape.z=z;
+    shape.segs=[];
+    shape.segs.push(new Seg(-1,-1,-1,1,-1,-1));
+    shape.segs.push(new Seg(1,-1,-1,1,1,-1));
+    shape.segs.push(new Seg(1,1,-1,-1,1,-1));
+    shape.segs.push(new Seg(-1,1,-1,-1,-1,-1));
+    shape.segs.push(new Seg(-1,-1,1,1,-1,1));
+    shape.segs.push(new Seg(1,-1,1,1,1,1));
+    shape.segs.push(new Seg(1,1,1,-1,1,1));
+    shape.segs.push(new Seg(-1,1,1,-1,-1,1));
+    shape.segs.push(new Seg(-1,-1,-1,-1,-1,1));
+    shape.segs.push(new Seg(1,-1,-1,1,-1,1));
+    shape.segs.push(new Seg(1,1,-1,1,1,1));
+    shape.segs.push(new Seg(-1,1,-1,-1,1,1));
+    return shape;
+}
+
+frame();</code></pre><br><hr>
+        <div class="text">
+            All the preceding code, graphics, and instruction was written by Scott McGann. Questions or comments can be emailed to s.r.mcgann[at]hotmail.com. Happy coding!
+        </div>
+
+
+    <script>
+            var pi = Math.PI;
+            var canvas = document.querySelector("#trees");
+            var ctx = canvas.getContext("2d");
+            canvas.width = 758;
+            canvas.height = 500;
+            var cx = canvas.width / 2;
+            var cy = canvas.height / 2;
+            var cameraX = 0;
+            var cameraY = -25;
+            var cameraZ = -150;
+            var pitch = 0;
+            var yaw = 0;
+            var scale = 600;
+            var trees = [];
+            var treeSize = 25;
+            var seed = 1;
+            var frames = 0;
+
+            function addBranches(branch, splits, depth, angle) {
+
+              branch.branches = [];
+              if (branch.depth > depth) return;
+              for (var m = 0; m < splits; ++m) {
+                x1 = branch.x2;
+                y1 = branch.y2;
+                z1 = branch.z2;
+                p1 = pi * 2 / splits * m;
+                p2 = pi + angle;
+                x2 = Math.sin(p1) * Math.sin(p2) * branch.length / 1.65;
+                y2 = Math.cos(p2) * branch.length / 1.65;
+                z2 = Math.cos(p1) * Math.sin(p2) * branch.length / 1.65;
+                p = Math.atan2(y2, z2);
+                d = Math.sqrt(y2 * y2 + z2 * z2);
+                y2 = y1 - Math.sin(p + branch.p2) * d;
+                z2 = Math.cos(p + branch.p2) * d;
+                p = Math.atan2(x2, z2);
+                d = Math.sqrt(x2 * x2 + z2 * z2);
+                x2 = x1 + Math.sin(p + branch.p1) * d;
+                z2 = z1 + Math.cos(p + branch.p1) * d;
+                var newBranch = {};
+                newBranch.x1 = x1;
+                newBranch.y1 = y1;
+                newBranch.z1 = z1;
+                newBranch.x2 = x2;
+                newBranch.y2 = y2;
+                newBranch.z2 = z2;
+                newBranch.p1 = Math.atan2(x2 - x1, z2 - z1);
+                newBranch.p2 = elevation(x2 - x1, z2 - z1, y2 - y1);
+                newBranch.length = branch.length / 1.65;
+                newBranch.depth = branch.depth + 1;
+                branch.branches.push(newBranch);
+                addBranches(newBranch, splits, depth, angle);
+              }
+
+            }
+
+            function spawnTree(x, y, z, splits, depth, angle) {
+
+              tree = {};
+              tree.branches = [];
+              tree.splits = splits;
+              tree.height = depth;
+              branch = {};
+
+              branch.x1 = x;
+              branch.y1 = y;
+              branch.z1 = z;
+              branch.p1 = 0;
+              branch.p2 = pi - 0.00001;
+              branch.length = treeSize;
+              branch.x2 = branch.x1 + Math.sin(branch.p1) * Math.sin(branch.p2) * branch.length;
+              branch.y2 = branch.y1 + Math.cos(branch.p2) * branch.length;
+              branch.z2 = branch.z1 + Math.cos(branch.p1) * Math.sin(branch.p2) * branch.length;
+              branch.depth = 1;
+
+              tree.branches.push(branch);
+              addBranches(tree.branches[0], splits, depth, angle);
+              return tree;
+            }
+
+            function rasterizePoint(x, y, z) {
+
+              var p, d;
+			  var {cos, sin, sqrt, atan2} = Math;
+              x -= cameraX;
+              y -= cameraY;
+              z -= cameraZ;
+              p = atan2(x, z);
+              d = sqrt(x * x + z * z);
+              x = sin(p - yaw) * d;
+              z = cos(p - yaw) * d;
+              p = atan2(y, z);
+              d = sqrt(y * y + z * z);
+              y = sin(p - pitch) * d;
+              z = cos(p - pitch) * d;
+              var rx1 = -1000;
+              var ry1 = 1;
+              var rx2 = 1000;
+              var ry2 = 1;
+              var rx3 = 0;
+              var ry3 = 0;
+              var rx4 = x;
+              var ry4 = z;
+              var uc = (ry4 - ry3) * (rx2 - rx1) - (rx4 - rx3) * (ry2 - ry1);
+              if (!uc) return {
+                x: 0,
+                y: 0,
+                d: -1
+              };
+              var ua = ((rx4 - rx3) * (ry1 - ry3) - (ry4 - ry3) * (rx1 - rx3)) / uc;
+              var ub = ((rx2 - rx1) * (ry1 - ry3) - (ry2 - ry1) * (rx1 - rx3)) / uc;
+              if (!z) z = 0.000000001;
+              if (ua > 0 && ua < 1 && ub > 0 && ub < 1) {
+                return {
+                  x: cx + (rx1 + ua * (rx2 - rx1)) * scale,
+                  y: cy + y / z * scale,
+                  d: sqrt(x * x + y * y + z * z)
+                };
+              } else {
+                return {
+                  x: cx + (rx1 + ua * (rx2 - rx1)) * scale,
+                  y: cy + y / z * scale,
+                  d: -1
+                };
+              }
+            }
+
+            function elevation(x, y, z) {
+
+              var dist = Math.sqrt(x * x + y * y + z * z);
+              if (dist && z / dist >= -1 && z / dist <= 1) return Math.acos(z / dist);
+              return 0.00000001;
+            }
+
+            function doLogic() {
+
+              p = Math.atan2(cameraX, cameraZ);
+              d = Math.sqrt(cameraX * cameraX + cameraZ * cameraZ);
+              d -= Math.sin(frames / 50) / 1.15;
+              t = Math.sin(frames / 160) / 40;
+              cameraX = Math.sin(p + t) * d;
+              cameraZ = Math.cos(p + t) * d;
+              cameraY -= Math.cos(frames / 80) / 2;
+              yaw = pi + p + t;
+              pitch = elevation(cameraX, cameraZ, cameraY) - pi / 2;
+
+              while (trees.length) trees.splice(0, 1);
+              angle = pi / 4 - Math.cos(frames / (35)) * pi / 4;
+              splits = 2;
+              depth = 7;
+              trees.push(spawnTree(0, 25, 0, splits, depth, angle));
+              splits = 2;
+              depth = 7;
+              trees.push(spawnTree(-50, 25, -50, splits, depth, angle));
+              splits = 3;
+              depth = 5;
+              trees.push(spawnTree(50, 25, -50, splits, depth, angle));
+              splits = 4;
+              depth = 4;
+              trees.push(spawnTree(50, 25, 50, splits, depth, angle));
+              splits = 5;
+              depth = 3;
+              trees.push(spawnTree(-50, 25, 50, splits, depth, angle));
+            }
+
+            function rgb(col) {
+
+              var r = parseInt((0.5 + Math.sin(col) * 0.5) * 16);
+              var g = parseInt((0.5 + Math.cos(col) * 0.5) * 16);
+              var b = parseInt((0.5 - Math.sin(col) * 0.5) * 16);
+              return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+            }
+
+            function drawFloor() {
+
+              ctx.globalAlpha = 0.2;
+              ctx.fillStyle = "#163";
+              for (i = -200; i <= 200; i += 6) {
+                for (j = -200; j <= 200; j += 6) {
+                  x = i;
+                  z = j;
+                  y = 25;
+                  point = rasterizePoint(x, y, z);
+                  if (point.d != -1) {
+                    size = 500 / (1 + point.d);
+                    d = Math.sqrt(x * x + z * z);
+                    a = 0.75 - Math.pow(d / 200, 6) * 0.75;
+                    if (a > 0) {
+                      ctx.globalAlpha = a;
+                      ctx.fillRect(point.x - size / 2, point.y - size / 2, size, size);
+                    }
+                  }
+                }
+              }
+            }
+
+            function drawBranches(branch) {
+
+              point1 = rasterizePoint(branch.x1, branch.y1, branch.z1);
+              point2 = rasterizePoint(branch.x2, branch.y2, branch.z2);
+              if (point1.d != -1 && point2.d != -1) {
+                ctx.lineWidth = 5000 / Math.pow(branch.depth + trees[i].splits, 1.5) / (1 + point1.d);
+                ctx.beginPath();
+                ctx.strokeStyle = rgb(2 + trees[i].splits + pi / 2 / trees[i].height * branch.depth);
+                ctx.moveTo(point1.x, point1.y);
+                ctx.lineTo(point2.x, point2.y);
+                ctx.stroke();
+              }
+              for (var m = 0; m < branch.branches.length; ++m) drawBranches(branch.branches[m]);
+            }
+
+            function draw() {
+
+              ctx.clearRect(0, 0, cx * 2, cy * 2);
+              drawFloor();
+              ctx.globalAlpha = 0.75;
+              for (i = 0; i < trees.length; ++i) drawBranches(trees[i].branches[0]);
+            }
+
+        </script>
+
+        <script>
+            function translateShape(x, y, z, shape){
+
+                shape.x += x;
+                shape.y += y;
+                shape.z += z;
+            }
+
+
+			function matrix_rotate(vert, roll, pitch, yaw) {
+				
+				var {cos, sin} = Math;
+				var cosa = cos(roll);
+				var sina = sin(roll);
+				var cosb = cos(yaw);
+				var sinb = sin(yaw);
+				var cosc = cos(-pitch);
+				var sinc = sin(-pitch);
+
+				var xx = cosa*cosb;
+				var xy = cosa*sinb*sinc - sina*cosc;
+				var xz = cosa*sinb*cosc + sina*sinc;
+				var yx = sina*cosb;
+				var yy = sina*sinb*sinc + cosa*cosc;
+				var yz = sina*sinb*cosc - cosa*sinc;
+				var zx = -sinb;
+				var zy = cosb*sinc;
+				var zz = cosb*cosc;
+
+				var px = xx*vert.x + xy*vert.y + xz*vert.z;
+				var py = yx*vert.x + yy*vert.y + yz*vert.z;
+				var pz = zx*vert.x + zy*vert.y + zz*vert.z;
+				
+				return {x:px, y:py, z:pz};
+			}
+			
+
+            function project3D(x, y, z, vars){
+
+              var p,d
+			  var {cos, sin, sqrt, atan2} = Math;
+              x-=vars.camX;
+              y-=vars.camY;
+              z-=vars.camZ;
+              p=atan2(x,z);
+              d=sqrt(x*x+z*z);
+              x=sin(p-vars.yaw)*d;
+              z=cos(p-vars.yaw)*d;
+              p=atan2(y,z);
+              d=sqrt(y*y+z*z);
+              y=sin(p-vars.pitch)*d;
+              z=cos(p-vars.pitch)*d;
+              var x1=-100,y1=1,x2=100,y2=1,x3=0,y3=0,x4=x,y4=z;
+              var uc=(y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
+              if(!uc) return {x:0,y:0,d:-1};
+              var ua=((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/uc;
+              var ub=((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/uc;
+              if(ua>0&&ua<1&&ub>0&&ub<1){
+                return {
+                  x:vars.cx+(x1+ua*(x2-x1))*vars.scale,
+                  y:vars.cy+y/z*vars.scale,
+                  d:sqrt(x*x+y*y+z*z)
+                };
+              }else{
+                return {d:-1};
+              }
+            }
+
+
+            function frame(vars){
+
+                if(vars === undefined){
+                    var vars={};
+                    vars.canvas = document.querySelector("#canvas");
+                    vars.ctx = vars.canvas.getContext("2d");
+                    vars.canvas.width = 758;
+                    vars.canvas.height = 500;
+                    vars.frameNo=0;
+                    vars.camX = 1;
+                    vars.camY = 0;
+                    vars.camZ = -6;
+                    vars.pitch = 0;
+                    vars.yaw = 0;
+                    vars.roll = 0;
+                    vars.cx=vars.canvas.width/2;
+                    vars.cy=vars.canvas.height/2;
+                    vars.scale=500;
+                    vars.shape=loadCube(-1,0,1);
+                    vars.ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+
+                vars.frameNo++;
+                requestAnimationFrame(function() { frame(vars);});
+                vars.ctx.clearRect(0, 0, canvas.width, canvas.height);
+                var x,y,z,point1,point2;
+                vars.ctx.strokeStyle="#ff0";
+                x=Math.sin(vars.frameNo/40)/20;
+                y=0;
+                z=Math.cos(vars.frameNo/40)/20;
+                translateShape(x,y,z,vars.shape);
+                
+                for(var i=0;i<vars.shape.segs.length;++i){
+                    vars.shape.segs[i].a=matrix_rotate(vars.shape.segs[i].a,0,-0.025,0.02);
+                    vars.shape.segs[i].b=matrix_rotate(vars.shape.segs[i].b,0,-0.025,0.02);
+                    x=vars.shape.x+vars.shape.segs[i].a.x;
+                    y=vars.shape.y+vars.shape.segs[i].a.y;
+                    z=vars.shape.z+vars.shape.segs[i].a.z;
+                    point1=project3D(x,y,z,vars);
+                    if(point1.d != -1){
+                        x=vars.shape.x+vars.shape.segs[i].b.x;
+                        y=vars.shape.y+vars.shape.segs[i].b.y;
+                        z=vars.shape.z+vars.shape.segs[i].b.z;
+                        point2=project3D(x,y,z,vars);
+                        if(point2.d != -1){
+                            vars.ctx.lineWidth=50/(1+point1.d);
+                            vars.ctx.beginPath();
+                            vars.ctx.moveTo(point1.x,point1.y);
+                            vars.ctx.lineTo(point2.x,point2.y);
+                            vars.ctx.stroke();
+                        }
+                    }
+                }
+              doLogic();
+              draw();
+              frames++;
+            }
+
+
+            function Vert(x,y,z){
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+
+
+            function Seg(x1,y1,z1,x2,y2,z2){
+                this.a = new Vert(x1,y1,z1);
+                this.b = new Vert(x2,y2,z2);
+            }
+
+
+            function loadCube(x,y,z){
+
+                var shape={};
+                shape.x=x;
+                shape.y=y;
+                shape.z=z;
+                shape.segs=[];
+                shape.segs.push(new Seg(-1,-1,-1,1,-1,-1));
+                shape.segs.push(new Seg(1,-1,-1,1,1,-1));
+                shape.segs.push(new Seg(1,1,-1,-1,1,-1));
+                shape.segs.push(new Seg(-1,1,-1,-1,-1,-1));
+                shape.segs.push(new Seg(-1,-1,1,1,-1,1));
+                shape.segs.push(new Seg(1,-1,1,1,1,1));
+                shape.segs.push(new Seg(1,1,1,-1,1,1));
+                shape.segs.push(new Seg(-1,1,1,-1,-1,1));
+                shape.segs.push(new Seg(-1,-1,-1,-1,-1,1));
+                shape.segs.push(new Seg(1,-1,-1,1,-1,1));
+                shape.segs.push(new Seg(1,1,-1,1,1,1));
+                shape.segs.push(new Seg(-1,1,-1,-1,1,1));
+                return shape;
+            }
+
+            frame();
+        </script>
+    </div>
+    <div style="clear:both;"></div>
+    <br><br><br>
+    </body>
+</html>

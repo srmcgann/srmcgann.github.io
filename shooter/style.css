@@ -1,0 +1,50 @@
+html, body{
+	margin:0px;
+	font-family:arial,tahoma;
+	color:#fff;
+	background:black;
+	overflow:hidden;
+	color:#0f0;
+}
+#status{
+	position:absolute;
+	margin:5px;
+	border-radius:10px;
+	padding:5px;
+	width:400px;
+	height:80px;
+	background: rgba(30,30,30,.75);
+	border:3px solid #666;
+	display:none;
+	font-family:courier,courier new;
+	font-size:18px;
+}
+#login{
+	position:absolute;
+	width:300px;
+	height:45px;
+	border:1px solid white;
+	border-radius:10px;
+	background:#333;
+	left:0;
+	right:0;
+	top:0;
+	bottom:0;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:auto;
+	margin-bottom:auto;
+	text-align:center;
+	font-size:24px;
+}
+#canvas{
+	width:100%;
+	height:100%;
+}
+#nick{
+	border-radius:5px;
+	background-color:black;
+	color:#fff;
+	font-size:20px;
+	text-align:center;
+}

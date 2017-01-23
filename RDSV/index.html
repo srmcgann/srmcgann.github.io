@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			body,html{
+				width:100%;
+				height:100%;
+				margin:0px;
+				background:#000 url(bg.jpg) 100% 100% no-repeat;
+				background-size:100% 100%;
+				color:#0f8;
+				font-family:arial,tahoma;
+				position:absolute;
+				overflow:hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<video loop id="video">
+			<source src="rds.mp4?2" type="video/mp4">
+			Your browser does not support the video tag.
+		</video>
+		<script>
+			document.getElementById("video").play();
+			w=document.body.clientWidth;
+			h=document.body.clientHeight;
+			nw=w/(1366*1.5);
+			nh=h/(768*1.5);
+			document.getElementById("video").style='transform-origin:0% 0%; -webkit-transform: scaleX('+nw+') scaleY('+nh+');-ms-transform: scaleX('+nw+') scaleY('+nh+');-moz-transform: scaleX('+nw+') scaleY('+nh+');';
+            window.addEventListener("resize", function(){
+				w=document.body.clientWidth;
+				h=document.body.clientHeight;
+				nw=w/(1366*1.5);
+				nh=h/(768*1.5);
+				document.getElementById("video").style='transform-origin:0% 0%; -webkit-transform: scaleX('+nw+') scaleY('+nh+');-ms-transform: scaleX('+nw+') scaleY('+nh+');-moz-transform: scaleX('+nw+') scaleY('+nh+');';
+			});
+		</script>
+	</body>
+</html>

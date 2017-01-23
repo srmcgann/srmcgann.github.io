@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="description" content="Free HTML5 demos, games and such">
+		<meta name="keywords" content="HTML5,canvas,JavaScript">
+		<meta name="viewport" content="width=device-width, initial-scale=.01">
+		<link rel="stylesheet" type="text/css" href="style.css?6">
+	</head>
+	<body>
+		<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-74589504-1', 'auto', {'allowLinker': true});
+  ga('require', 'linker');
+  ga('linker:autoLink', ['cantelope.net'] );
+  ga('send', 'pageview');
+
+</script>		<canvas id="canvas"></canvas>
+		<div id="main">
+			<div class="header">
+				Choose an Experiment...
+				<span class="subheader">(All items run in browser)</span>
+			</div>
+
+			<a target="_blank" href="modulation">
+				<div class="largeB">
+					<span class="titleLargeW" style="margin-left:-300px;">MODULATION</span>
+					<img src="modulation.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="webgl">
+				<div class="smallB">
+					<span class="titleSmall" style="font-size:1.5em;">WEBGL</span>
+					<img src="webgl.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="pulse">
+				<div class="smallA" style="margin-top:150px;">
+					<span class="titleSmall" style="color:white;font-size:1.1em;margin-top:20px;margin-left:-20px">PULSE</span>
+					<img src="pulse.jpg">
+				</div>
+			</a>
+			<a target="_blank" href="gravtype3">
+				<div class="largeA" style="margin-top:50px;">
+					<span class="titleLargeW" style="margin-left:-75px;">GRAVTYPE 3</span>
+					<img src="gravtype3.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="curves3D">
+				<div class="largeB">
+					<span class="titleLargeW" style="margin-left:-300px;">CURVES 3D</span>
+					<img src="curves3D.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="RDS">
+				<div class="smallB">
+					<span class="titleSmall" style="font-size:1.5em;">RDS</span>
+					<img src="RDS.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="flux">
+				<div class="smallA" style="margin-top:150px;">
+					<span class="titleSmall" style="color:white;font-size:1.1em;margin-top:20px;margin-left:-140px">FLUX</span>
+					<img src="flux.jpg">
+				</div>
+			</a>
+			<a target="_blank" href="RDSV">
+				<div class="largeA" style="margin-top:50px;">
+					<span class="titleLargeW" style="margin-left:-300px;color:white">RDSV</span>
+					<img src="RDSV.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="flux3D">
+				<div class="largeB">
+					<span class="titleLargeW" style="margin-left:-300px;">FLUX 3D</span>
+					<img src="flux3D.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="ball_field3">
+				<div class="smallB" style="margin-top:200px;">
+					<span class="titleSmallW" style="font-size:1em;">BALLFIELD 3</span>
+					<img src="ball_field3.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="ball_field2">
+				<div class="smallA" style="margin-top:150px;">
+					<span class="titleSmall" style="color:white;font-size:1.1em;margin-top:20px;margin-left:-140px">BALLFIELD 2</span>
+					<img src="ball_field2.jpg">
+				</div>
+			</a>
+			<a target="_blank" href="ball_field4">
+				<div class="largeA" style="margin-top:50px;">
+					<span class="titleLargeW" style="margin-left:-300px;color:white">BALLFIELD 4</span>
+					<img src="ball_field4.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="background2">
+				<div class="largeB">
+					<span class="titleLarge" style="margin-left:-300px;">BACKGROUND 2</span>
+					<img src="background2.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="fullerine">
+				<div class="smallB">
+					<span class="titleSmall" style="color:black;font-size:1em;">FULLERINE</span>
+					<img src="fullerine.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="puggame">
+				<div class="smallA" style="margin-top:150px;">
+					<span class="titleSmall" style="color:white;font-size:1.1em;margin-top:50px;margin-left:-140px">PUG<br>GAME</span>
+					<img src="puggame.jpg">
+				</div>
+			</a>
+			<a target="_blank" href="shapes">
+				<div class="largeA" style="margin-top:50px;">
+					<span class="titleLargeW" style="margin-left:-300px">SHAPES</span>
+					<img src="shapes.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="flow">
+				<div class="largeB">
+					<span class="titleLarge" style="margin-left:100px;">FLOW</span>
+					<img src="flow.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="collisions">
+				<div class="smallB">
+					<span class="titleSmall" style="color:white;font-size:1em;">COLLISIONS</span>
+					<img src="collisions.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="spirograph">
+				<div class="smallA" style="margin-top:150px;">
+					<span class="titleSmall" style="color:white;font-size:1.1em;">SPIROGRAPH</span>
+					<img src="spirograph.jpg">
+				</div>
+			</a>
+			<a target="_blank" href="icosahedron">
+				<div class="largeA" style="margin-top:50px;">
+					<span class="titleLargeW">ICOSAHEDRONS</span>
+					<img src="icosahedrons.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="trig">
+				<div class="largeB">
+					<span class="titleLargeW">TRIG</span>
+					<img src="trig.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="voronoi">
+				<div class="smallB">
+					<span class="titleSmall" style="color:white;">VORONOI</span>
+					<img src="voronoi.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="network">
+				<div class="smallA" style="margin-top:150px;">
+					<span class="titleSmall" style="color:white;">NETWORK</span>
+					<img src="network.jpg">
+				</div>
+			</a>
+			<a target="_blank" href="network3D">
+				<div class="largeA" style="margin-top:50px;">
+					<span class="titleLargeW">NETWORK3D</span>
+					<img src="network3D.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="network3D2">
+				<div class="largeB">
+					<span class="titleLargeW">NETWORK3D2</span>
+					<img src="network3D2.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="see">
+				<div class="smallB" style="margin-top:180px;">
+					<img src="see.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="gravball">
+				<div class="smallA" style="margin-top:180px;">
+					<span class="titleSmall">GRAVBALL</span>
+					<img src="gravball.jpg">
+				</div>
+			</a>
+			<a target="_blank" href="gravball2">
+				<div class="largeA" style="margin-top:60px;">
+					<span class="titleLargeW">GRAVBALL2</span>
+					<img src="gravball2.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="picker">
+				<div class="largeB">
+					<span class="titleLargeW">PICKER</span>
+					<img src="picker.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="roots">
+				<div class="smallB">
+					<span class="titleSmallW">ROOTS</span>
+					<img src="roots.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="colors">
+				<div class="smallA" style="margin-top:180px;">
+					<span class="titleSmall">COLORS</span>
+					<img src="colors.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="wavesb">
+				<div class="largeA" style="margin-top:100px;">
+					<span class="titleLargeW">WAVES</span>
+					<img src="waves.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="pong">
+				<div class="largeB">
+					<span class="titleLargeW">3D PONG</span>
+					<img src="pong.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="3dcheese">
+				<div class="smallB">
+					<span class="titleSmallW">3D CHEESE</span>
+					<img src="3dcheese.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="cheese">
+				<div class="smallA">
+					<span class="titleSmallW">CHEESE</span>
+					<img src="cheese.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="automata">
+				<div class="largeA" style="margin-left:160px;">
+					<span class="titleLargeW">AUTOMATA</span>
+					<img src="automata.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="3D">
+				<div class="largeA" style="margin-top:10px;">
+					<img src="3d.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="missiles">
+				<div class="smallA" style="margin-top:160px;">
+					<span class="titleSmall">MISSILES</span>
+					<img src="missiles.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="particles">
+				<div class="smallA">
+					<span class="titleSmall">PARTICLES</span>
+					<img src="particles.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="droplets">
+				<div class="largeA" style="margin-top:100px;">
+					<span class="titleLarge">DROPLETS</span>
+					<img src="droplets.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="metaballs">
+				<div class="largeA">
+					<span class="titleLarge">METABALLS</span>
+					<img src="metaballs.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="http://color-mixer.tk">
+				<div class="smallA">
+					<span class="titleSmall">DRAW & SHARE</span>
+					<img src="color_mixer.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="city">
+				<div class="smallA">
+					<span class="titleSmall">CITY</span>
+					<img src="city.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="weirdness">
+				<div class="largeB" style="margin-top:100px;">
+					<span class="titleLarge">ANIMATED WEIRDNESS</span>
+					<img src="weirdness.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="2teams">
+				<div class="largeA">
+					<span class="titleLargeW">2 TEAMS</span>
+					<img src="2teams.jpg">
+				</div>
+			</a>
+			
+			<a target="_blank" href="http://lookie.ml">
+				<div class="smallA">
+					<span class="titleSmallW">Image & Video Sharing</span>
+					<img src="lookie.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="jump_off_the_roof">
+				<div class="smallA">
+					<span class="titleSmall">DYNAMIC<br>GRADIENTS</span>
+					<img src="gradients.jpg">
+				</div>
+			</a>
+			
+			<a target="_blank" href="turtles_advanced">
+				<div class="largeB">
+					<span class="titleLargeW">TURTLES</span>
+					<img src="turtles.jpg" width=600>
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="interpolation">
+				<div class="largeA">
+					<span class="titleLargeW">INTERPOLATION</span>
+					<img src="interpolation.jpg" width=600>
+				</div>
+			</a>
+			
+			<a target="_blank" href="slider">
+				<div class="smallA">
+					<span class="titleSmallW">SLIDER</span>
+					<img src="slider.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="solids">
+				<div class="smallB" style="margin-top:50px;margin-left:100px;">
+					<img src="solids.jpg">
+				</div>
+			</a>
+			
+			<a target="_blank" href="geosphere">
+				<div class="largeB" style="margin-left:100px;">
+					<span class="titleLargeW">GEOSPHERE</span>
+					<img src="geosphere.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="recursiveTrees">
+				<div class="largeA">
+					<span class="titleLargeW">GEOMETRIC<br>TREES</span>
+					<img src="trees.jpg" width=600>
+				</div>
+			</a>
+			
+			<a target="_blank" href="NYE">
+				<div class="smallA">
+					<span class="titleSmallW">FIREWORKS</span>
+					<img src="fireworks.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="tron">
+				<div class="smallA">
+					<img src="tron.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+			
+			<a target="_blank" href="snake">
+				<div class="largeA">
+					<span class="titleSmall">SNAKE!</span>
+					<img src="snake.jpg">
+				</div>
+			</a>
+			<a target="_blank" href="td">
+				<div class="largeA" style="margin-top:-150px;margin-left:100px;">
+					<span class="titleLarge">TOWER<br>DEFENSE</span>
+					<img src="td.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+			
+			<a target="_blank" href="http://cantelope.net/space">
+				<div class="smallA">
+					<span class="titleSmallW">SPACE<br>PIRATES</span>
+					<img src="space.jpg" width=600>
+				</div>
+			</a>
+
+
+			<a target="_blank" href="sentence">
+				<div class="smallB" style="margin-top:150px;">
+					<span class="titleSmall">NOISE</span>
+					<img src="noise.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+			
+			<a target="_blank" href="http://cantelope.net/show">
+				<div class="smallB" style="margin-left:100px;margin-top:150px;background:#112;width:200px;height:200px;">
+					<span class="titleSmall" style="font-size:32px;color:red;margin-left:-80px">24 Hour<br>Live Show<br>&amp;<br>Chat</span>
+				</div>
+			</a>
+			<a target="_blank" href="puyopuyo">
+				<div class="largeB" style="margin-top:50px;margin-left:100px;">
+					<span class="titleLargeW">Puyo<br>Puyo</span>
+					<img src="puyopuyo.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+
+			<a target="_blank" href="http://cantelope.net/landtheship">
+				<div class="largeA">
+					<span class="titleLarge">LAND THE SHIP</span>
+					<img src="landtheship.jpg">
+				</div>
+			</a>			
+			<a target="_blank" href="tetris">
+				<div class="smallA" style="margin-left:100px;">
+					<img src="tetris.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+
+			<a target="_blank" href="shooter">
+				<div class="largeB" style="margin-left:300px;margin-top:80px;">
+					<span class="titleLargeW">MMO</span>
+					<img src="shooter.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+			<a target="_blank" href="http://cantelope.net/physics">
+				<div class="largeA" style="margin-top:100px;">
+					<span class="titleLarge">PHYSICS</span>
+					<img src="physics.jpg">
+				</div>
+			</a>
+			<a target="_blank" href="http://cantelope.net/show">
+				<div class="smallA" style="margin-top:100px;">
+					The Author<br>
+					<img src="cantelope2.jpg">
+				</div>
+			</a>
+			<div class="clear"></div>
+			
+			<div class="footer">
+				This site is no longer hosted on a <a target="_blank" href="pi.jpg">Raspberry Pi</a>
+			</div>
+		</div>
+		<script src="cursorCandy.js?6"></script>
+	</body>
+</html>

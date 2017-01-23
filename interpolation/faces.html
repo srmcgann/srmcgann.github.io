@@ -1,0 +1,19 @@
+<?
+	$infile = @fopen("sword2.obj", "r");
+	$outfile = @fopen("faces", "w");
+    	fputs($outfile, "[");
+	while (($buffer = fgets($infile, 4096)) !== false) {
+        	if(substr($buffer,0,1)=='f'){
+			fputs($outfile,"[");
+			$line='';
+			while(strlen($buffer)>0){
+				$buffer=substr($buffer,strpos($buffer," ")+1);
+				if(strpos($buffer,"/"))$line.=substr($buffer,0,strpos($buffer,"/")).',';
+				if(strpos($buffer," ")===false)$buffer="";
+			}
+			fputs($outfile,substr($line,0,strlen($line)-1)."],");
+		}
+	}
+	fputs($outfile,"]");
+	echo "done.\n";
+?>

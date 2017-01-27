@@ -139,11 +139,11 @@
     function loadScene(vars){
 
 		vars.ball1=new Image();
-		vars.ball1.src="http://cantelope.org/gravtype3/ball1.png";
+		vars.ball1.src="ball1.png";
 		vars.ball2=new Image();
-		vars.ball2.src="http://cantelope.org/gravtype3/ball2.png";
+		vars.ball2.src="ball2.png";
 		vars.clouds=new Image();
-		vars.clouds.src="http://cantelope.org/gravtype3/red_clouds2.jpg";
+		vars.clouds.src="red_clouds2.jpg";
 
 		vars.bctx.clearRect(0, 0, canvas.width, canvas.height);
 		vars.bctx.font="99px Square721";

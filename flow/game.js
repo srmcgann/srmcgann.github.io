@@ -86,9 +86,9 @@
 		vars.dripV=9;
 		vars.CPV=5;
 		vars.dripPic=new Image();
-		vars.dripPic.src="http://cantelope.org/flow/drip.png";
+		vars.dripPic.src="drip.png";
 		vars.ballPic=new Image();
-		vars.ballPic.src="http://cantelope.org/flow/ball.png";
+		vars.ballPic.src="ball.png";
 		vars.drips=[];
 		for(var i=0;i<initDrips;++i){
 			x=100+Math.random()*(vars.canvas.width-200);

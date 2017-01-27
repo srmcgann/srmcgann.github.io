@@ -562,9 +562,9 @@
 		
 		vars.points=[];
 		vars.ball1=new Image();
-		vars.ball1.src="http://cantelope.org/curves/ball1.png";
+		vars.ball1.src="ball1.png";
 		vars.ball2=new Image();
-		vars.ball2.src="http://cantelope.org/curves/ball2.png";
+		vars.ball2.src="ball2.png";
 		var x,y,z,p,initPoints=10,initV=0;
 		for(var i=0;i<initPoints;++i){
 			var point={};

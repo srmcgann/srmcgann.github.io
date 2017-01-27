@@ -676,11 +676,11 @@
     function loadScene(vars){
 
 		vars.ball1Pic=new Image();
-		vars.ball1Pic.src="http://cantelope.org/ball_field3/ball3.png";
+		vars.ball1Pic.src="ball3.png";
 		vars.ball2Pic=new Image();
-		vars.ball2Pic.src="http://cantelope.org/ball_field3/ball2.png";
+		vars.ball2Pic.src="ball2.png";
 		vars.ball3Pic=new Image();
-		vars.ball3Pic.src="http://cantelope.org/ball_field3/ball4.png";
+		vars.ball3Pic.src="ball4.png";
 		vars.balls=[];
 
 		var x,y,z,p,ok,sd;

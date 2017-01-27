@@ -8,9 +8,9 @@ html,body{
 
 @font-face {
     font-family: 'Square721';
-	src:url('http://cantelope.org/gravtype3/TT0246M_.TTF?2') format('truetype'),
-		 url('http://cantelope.org/gravtype3/TT0246M_.otf?2') format('opentype'),
-		 url('http://cantelope.org/gravtype3/TT0246M_.woff?2') format('woff');
+	src:url('TT0246M_.TTF?2') format('truetype'),
+		 url('TT0246M_.otf?2') format('opentype'),
+		 url('TT0246M_.woff?2') format('woff');
 }
 
 #canvas{

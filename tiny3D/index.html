@@ -1,0 +1,590 @@
+<!doctype HTML>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>Tiny 3D (JavaScript)</title>
+		<meta name="description" content="How to make a tiny 3D app (in Javascript)">
+		<meta name="keywords" content="HTML5,canvas,JavaScript,3D,jsgolf,sphere">
+		<script src="prism.js"></script>
+    </head>
+    <body>
+        <div id="main">
+            <div id="header">
+                Tiny 3D
+            </div>
+            <div class="text">
+                The question has been asked...<br>
+				how to create the smallest possible perspective 3D engine.<br><br>
+                
+                Here is the process.<br>
+            </div>
+            <canvas id="canvas1"></canvas>
+			<script>
+				c=document.getElementById("canvas1");
+				x=c.getContext("2d");
+				c.width=1920;
+				c.height=1080;
+				S=Math.sin;
+				C=Math.cos;
+		  </script>
+            <div class="text">
+                Above is an example of what can be done with such a construct.<br>
+				It uses the code below to draw the scene.<br>
+            </div>
+                <pre class="line-numbers" style="width:865px;">
+<code class="language-javascript" style="word-wrap:break-word;">c=document.getElementById("canvas1");
+x=c.getContext("2d");
+c.width=1920;
+c.height=1080;
+S=Math.sin;
+C=Math.cos;
+
+u=()=>{
+	
+	for(x.fillRect(0,0,i=(w=960)*3,i);i--;){
+		Z=C(p=i/63.67)*(v=i%8/8+1)+3
+		x.clearRect(w+(S(q=i/381+S(t)*2)*Z)/(Z=C(q)*Z-7)*w,540+S(p)*v/Z*w,6,6)
+	}
+	
+	t+=1/60
+	requestAnimationFrame(u)
+}
+
+t=0
+u()
+</code></pre>
+    <script>
+		u=()=>{
+			
+	for(x.fillRect(0,0,i=(w=960)*3,i);i--;x.clearRect(w+(S(q=i/381+S(t)*2)*Z)/(Z=C(q)*Z-7)*w,540+S(p)*v/Z*w,6,6))Z=C(p=i/63.67)*(v=i%8/8+1)+3
+	
+	t+=1/60
+	requestAnimationFrame(u)
+	}
+
+		t=0
+		u()
+	</script>
+            <div class="text">
+				This is fine and dandy, but how does it work? Where is the 3D magic happening?<br><br>
+				Before we begin unraveling this code, let me tell a little story...<br><br>
+				In the beginning I had many lofty programming goals but little knowledge of how to achieve them. I started learning to code on an ancient Apple II computer and similar machines. I took a LOGO programming class when I was 8 years old and formed an obsession with geometry and graphics programming.<br><br>Over the years I gradually learned to achieve my programming goals, developing ever more sophistocated demos and games. My rough elipses became ornate experiments in symmetry, and my 2D shapes and coordinate systems eventually became 3D.<br><br>My 3D engine specifically was born of the idea that perspective rendering can be accomplished by drawing line segments and using their intersections together with vanishing points to plot 3D perspective. My first 3D "engines" were very many lines, inefficient, and faithfully reproduced the line-intersection 3D perspective approach.<br><br>
+				It wasn't until I began code golfing that I made a break through discovery. Having decided to enter some 3D experiments in the annual JS1K competition I was forced to shrink (golf) my code into the smallest possible byte space. The math behind my already refined intersection based 3D engine was condensed in earnest. Embarrassingly I did not have my breakthrough immediately at this point, but only later after much peer review. Eventually, I discovered what is  probably the smallest possible 3D projection algorithm in existence. Below is the holy grail of 3D engines.
+            </div>
+<pre class="line-numbers" style="width:865px;">
+<code class="language-javascript">w = c.width/2
+h = c.height/2
+R = (X, Y, Z) => [w+X/Z*w, h+Y/Z*w]
+</code></pre>
+            <div class="text">
+				This little function named 'R' works on a single 3D vertex, assuming a camera position of CamX=0, CamY=0, CamZ=0, returning an array with 2 elements, corresponding to the vertex's projected position onto a 2D screen. You can think of these 2 returned elements as the x & y of a screen pixel. They may be fractions and they may not be exactly what we need to render a complete scene, especially if we have vertices behind the "camera", because indeed this camera does not even check to see if a vertex is in front of it before rendering it. To add this feature we can just add a 3rd element to the returned array that indicates vertex distance to the camera, or -1 if behind it...
+            </div>
+<pre class="line-numbers" style="width:865px;">
+<code class="language-javascript">w = c.width/2
+h = c.height/2
+R = (X, Y, Z) => [w+X/Z*w, h+Y/Z*w, Z>0?Z*Z:-1]
+</code></pre>
+            <div class="text">
+				So now we have a slightly more useful camera, which sanely renders only vertices in front of it. We may also wish to plug in a camera position and orientation... Why would someone want to move and rotate a camera? Because it's ~a lot~ easier than moving and rotating the whole universe, especially if your universe contains a lot of vertices ;) Here is a full-featured camera...
+            </div>
+<pre class="line-numbers" style="width:865px;">
+<code class="language-javascript">w = c.width/2
+h = c.height/2
+CamX=0
+CamY=4
+CamZ=4
+CamYaw=.5
+CamPitch=-.5
+
+R = (X, Y, Z) => {
+
+	// apply camera position
+	X-=CamX
+	Y-=CamY
+	Z-=CamZ
+	
+	// apply camera rotation (yaw)
+	var p=Math.atan2(X,Z)-CamYaw
+	var d=Math.sqrt(X*X+Z*Z)
+	X=S(p)*d
+	Z=C(p)*d
+
+	// apply camera rotation (pitch)
+	var p=Math.atan2(Y,Z)-CamPitch
+	var d=Math.sqrt(Y*Y+Z*Z)
+	Y=S(p)*d
+	Z=C(p)*d
+	
+	return [w+X/Z*w, h+Y/Z*w, Z>0?Z*Z:-1]
+}
+</code></pre>
+            <div class="text">
+				Lastly, we need to feed some verts into our camera and render some graphics! Below is a complete program and its code...
+            </div>
+            <canvas id="canvas2"></canvas><br><br>
+                <pre class="line-numbers" style="width:865px;text-wrap:wrap">
+<code class="language-javascript">R = (X, Y, Z, vars) => {
+
+	var w=vars.cx
+	var h=vars.cy
+	
+	X-=vars.camX
+	Y-=vars.camY-8
+	Z-=vars.camZ
+	
+	var p=Math.atan2(X,Z)-vars.yaw
+	var d=Math.sqrt(X*X+Z*Z)
+	X=S(p)*d
+	Z=C(p)*d
+	
+	var p=Math.atan2(Y,Z)-vars.pitch
+	var d=Math.sqrt(Y*Y+Z*Z)
+	Y=S(p)*d
+	Z=C(p)*d
+	
+	return {x:w+X/Z*vars.scale, y:h+Y/Z*vars.scale, d:Z>0?(X*X+Y*Y+Z*Z):-1}
+}
+
+
+function elevation(x,y,z){
+
+	var dist = Math.sqrt(x*x+y*y+z*z);
+	if(dist && z/dist>=-1 && z/dist &lt;=1) return Math.acos(z / dist);
+}
+
+
+function rgb(col){
+
+	col += 0.000001;
+	var r = parseInt((0.5+Math.sin(col)*0.5)*16);
+	var g = parseInt((0.5+Math.cos(col)*0.5)*16);
+	var b = parseInt((0.5-Math.sin(col)*0.5)*16);
+	return "#"+r.toString(16)+g.toString(16)+b.toString(16);
+}
+
+
+function interpolateColors(RGB1,RGB2,degree){
+	
+	var w2=degree;
+	var w1=1-w2;
+	return [w1*RGB1[0]+w2*RGB2[0],w1*RGB1[1]+w2*RGB2[1],w1*RGB1[2]+w2*RGB2[2]];
+}
+
+
+function rgbArray(col){
+
+	col += 0.000001;
+	var r = parseInt((0.5+Math.sin(col)*0.5)*256);
+	var g = parseInt((0.5+Math.cos(col)*0.5)*256);
+	var b = parseInt((0.5-Math.sin(col)*0.5)*256);
+	return [r, g, b];
+}
+
+
+function colorString(arr){
+
+	var r = parseInt(arr[0]);
+	var g = parseInt(arr[1]);
+	var b = parseInt(arr[2]);
+	return "#"+("0" + r.toString(16) ).slice (-2)+("0" + g.toString(16) ).slice (-2)+("0" + b.toString(16) ).slice (-2);
+}
+
+
+function process(vars){
+
+
+	if(vars.points.length&lt;vars.initParticles) for(var i=0;i&lt;5;++i) spawnParticle(vars);
+	var p,d,t;
+	
+	p = Math.atan2(vars.camX, vars.camZ);
+	d = Math.sqrt(vars.camX * vars.camX + vars.camZ * vars.camZ);
+	d -= Math.sin(vars.frameNo / 80) / 25;
+	t = Math.cos(vars.frameNo / 300) / 165;
+	vars.camX = Math.sin(p + t) * d;
+	vars.camZ = Math.cos(p + t) * d;
+	vars.camY = -Math.sin(vars.frameNo / 220) * 15;
+	vars.yaw = Math.PI + p + t;
+	vars.pitch = elevation(vars.camX, vars.camZ, vars.camY) - Math.PI / 2;
+	
+	var t;
+	for(var i=0;i&lt;vars.points.length;++i){
+		
+		var x=vars.points[i].x;
+		y=vars.points[i].y;
+		z=vars.points[i].z;
+		d=Math.sqrt(x*x+z*z)/1.0075;
+		t=.1/(1+d*d/5);
+		p=Math.atan2(x,z)+t;
+		vars.points[i].x=Math.sin(p)*d;
+		vars.points[i].z=Math.cos(p)*d;
+		vars.points[i].y+=vars.points[i].vy*t*((Math.sqrt(vars.distributionRadius)-d)*2);
+		if(vars.points[i].y>vars.vortexHeight/2 || d&lt;.25){
+			vars.points.splice(i,1);
+			spawnParticle(vars);
+		}
+	}
+}
+
+function drawFloor(vars){
+	
+	var x,y,z,d,point,a;
+	for (var i = -25; i &lt;= 25; i += 1) {
+		for (var j = -25; j &lt;= 25; j += 1) {
+			x = i*2;
+			z = j*2;
+			y = vars.floor;
+			d = Math.sqrt(x * x + z * z);
+			point = R(x, y-d*d/85, z, vars);
+			if (point.d != -1) {
+				size = 1 + 15000 / (1 + point.d);
+				a = 0.15 - Math.pow(d / 50, 4) * 0.15;
+				if (a > 0) {
+					vars.ctx.fillStyle = colorString(interpolateColors(rgbArray(d/26-vars.frameNo/40),[0,128,32],.5+Math.sin(d/6-vars.frameNo/8)/2));
+					vars.ctx.globalAlpha = a;
+					vars.ctx.fillRect(point.x-size/2,point.y-size/2,size,size);
+				}
+			}
+		}
+	}		
+	vars.ctx.fillStyle = "#82f";
+	for (var i = -25; i &lt;= 25; i += 1) {
+		for (var j = -25; j &lt;= 25; j += 1) {
+			x = i*2;
+			z = j*2;
+			y = -vars.floor;
+			d = Math.sqrt(x * x + z * z);
+			point = R(x, y+d*d/85, z, vars);
+			if (point.d != -1) {
+				size = 1 + 15000 / (1 + point.d);
+				a = 0.15 - Math.pow(d / 50, 4) * 0.15;
+				if (a > 0) {
+					vars.ctx.fillStyle = colorString(interpolateColors(rgbArray(-d/26-vars.frameNo/40),[32,0,128],.5+Math.sin(-d/6-vars.frameNo/8)/2));
+					vars.ctx.globalAlpha = a;
+					vars.ctx.fillRect(point.x-size/2,point.y-size/2,size,size);
+				}
+			}
+		}
+	}		
+}
+
+function sortFunction(a,b){
+	return b.dist-a.dist;
+}
+
+function draw(vars){
+
+	vars.ctx.globalAlpha=.15;
+	vars.ctx.fillStyle="#000";
+	vars.ctx.fillRect(0, 0, vars.canvas.width, vars.canvas.height);
+	
+	drawFloor(vars);
+	
+	var point,x,y,z,a;
+	for(var i=0;i&lt;vars.points.length;++i){
+		x=vars.points[i].x;
+		y=vars.points[i].y;
+		z=vars.points[i].z;
+		point=R(x,y,z,vars);
+		if(point.d != -1){
+			vars.points[i].dist=point.d;
+			size=1+vars.points[i].radius/(1+point.d);
+			d=Math.abs(vars.points[i].y);
+			a = .8 - Math.pow(d / (vars.vortexHeight/2), 1000) * .8;
+			vars.ctx.globalAlpha=a>=0&&a&lt;=1?a:0;
+			vars.ctx.fillStyle=rgb(vars.points[i].color);
+			if(point.x>-1&&point.x&lt;vars.canvas.width&&point.y>-1&&point.y&lt;vars.canvas.height)vars.ctx.fillRect(point.x-size/2,point.y-size/2,size,size);
+		}
+	}
+	vars.points.sort(sortFunction);
+}
+
+
+function spawnParticle(vars){
+
+	var p,ls;
+	pt={};
+	p=Math.PI*2*Math.random();
+	ls=Math.sqrt(Math.random()*vars.distributionRadius);
+	pt.x=Math.sin(p)*ls;
+	pt.y=-vars.vortexHeight/2;
+	pt.vy=vars.initV/20+Math.random()*vars.initV;
+	pt.z=Math.cos(p)*ls;
+	pt.radius=200+800*Math.random();
+	pt.color=pt.radius/1000+vars.frameNo/250;
+	vars.points.push(pt);	
+}
+
+function frame(vars) {
+
+	if(vars === undefined){
+		var vars={};
+		vars.canvas = document.querySelector("#canvas2");
+		vars.ctx = vars.canvas.getContext("2d");
+		vars.canvas.width = 1920;
+		vars.canvas.height = 1080;
+		vars.frameNo=0;
+		vars.camX = 0;
+		vars.camY = 0;
+		vars.camZ = -14;
+		vars.pitch = elevation(vars.camX, vars.camZ, vars.camY) - Math.PI / 2;
+		vars.yaw = 0;
+		vars.cx=vars.canvas.width/2;
+		vars.cy=vars.canvas.height/2;
+		vars.bounding=10;
+		vars.scale=500;
+		vars.floor=26.5;
+
+		vars.points=[];
+		vars.initParticles=2000;
+		vars.initV=.01;
+		vars.distributionRadius=800;
+		vars.vortexHeight=25;
+	}
+
+	vars.frameNo++;
+	requestAnimationFrame(function() {
+		frame(vars);
+	});
+
+	process(vars);
+	draw(vars);
+}
+frame();</code></pre>
+			<script>R = (X, Y, Z, vars) => {
+
+	var w=vars.cx
+	var h=vars.cy
+	
+	X-=vars.camX
+	Y-=vars.camY-8
+	Z-=vars.camZ
+	
+	var p=Math.atan2(X,Z)-vars.yaw
+	var d=Math.sqrt(X*X+Z*Z)
+	X=S(p)*d
+	Z=C(p)*d
+	
+	var p=Math.atan2(Y,Z)-vars.pitch
+	var d=Math.sqrt(Y*Y+Z*Z)
+	Y=S(p)*d
+	Z=C(p)*d
+	
+	return {x:w+X/Z*vars.scale, y:h+Y/Z*vars.scale, d:Z>0?(X*X+Y*Y+Z*Z):-1}
+}
+
+
+function elevation(x,y,z){
+
+	var dist = Math.sqrt(x*x+y*y+z*z);
+	if(dist && z/dist>=-1 && z/dist <=1) return Math.acos(z / dist);
+}
+
+
+function rgb(col){
+
+	col += 0.000001;
+	var r = parseInt((0.5+Math.sin(col)*0.5)*16);
+	var g = parseInt((0.5+Math.cos(col)*0.5)*16);
+	var b = parseInt((0.5-Math.sin(col)*0.5)*16);
+	return "#"+r.toString(16)+g.toString(16)+b.toString(16);
+}
+
+
+function interpolateColors(RGB1,RGB2,degree){
+	
+	var w2=degree;
+	var w1=1-w2;
+	return [w1*RGB1[0]+w2*RGB2[0],w1*RGB1[1]+w2*RGB2[1],w1*RGB1[2]+w2*RGB2[2]];
+}
+
+
+function rgbArray(col){
+
+	col += 0.000001;
+	var r = parseInt((0.5+Math.sin(col)*0.5)*256);
+	var g = parseInt((0.5+Math.cos(col)*0.5)*256);
+	var b = parseInt((0.5-Math.sin(col)*0.5)*256);
+	return [r, g, b];
+}
+
+
+function colorString(arr){
+
+	var r = parseInt(arr[0]);
+	var g = parseInt(arr[1]);
+	var b = parseInt(arr[2]);
+	return "#"+("0" + r.toString(16) ).slice (-2)+("0" + g.toString(16) ).slice (-2)+("0" + b.toString(16) ).slice (-2);
+}
+
+
+function process(vars){
+
+
+	if(vars.points.length<vars.initParticles) for(var i=0;i<5;++i) spawnParticle(vars);
+	var p,d,t;
+	
+	p = Math.atan2(vars.camX, vars.camZ);
+	d = Math.sqrt(vars.camX * vars.camX + vars.camZ * vars.camZ);
+	d -= Math.sin(vars.frameNo / 80) / 25;
+	t = Math.cos(vars.frameNo / 300) / 165;
+	vars.camX = Math.sin(p + t) * d;
+	vars.camZ = Math.cos(p + t) * d;
+	vars.camY = -Math.sin(vars.frameNo / 220) * 15;
+	vars.yaw = Math.PI + p + t;
+	vars.pitch = elevation(vars.camX, vars.camZ, vars.camY) - Math.PI / 2;
+	
+	var t;
+	for(var i=0;i<vars.points.length;++i){
+		
+		var x=vars.points[i].x;
+		y=vars.points[i].y;
+		z=vars.points[i].z;
+		d=Math.sqrt(x*x+z*z)/1.0075;
+		t=.1/(1+d*d/5);
+		p=Math.atan2(x,z)+t;
+		vars.points[i].x=Math.sin(p)*d;
+		vars.points[i].z=Math.cos(p)*d;
+		vars.points[i].y+=vars.points[i].vy*t*((Math.sqrt(vars.distributionRadius)-d)*2);
+		if(vars.points[i].y>vars.vortexHeight/2 || d<.25){
+			vars.points.splice(i,1);
+			spawnParticle(vars);
+		}
+	}
+}
+
+function drawFloor(vars){
+	
+	var x,y,z,d,point,a;
+	for (var i = -25; i <= 25; i += 1) {
+		for (var j = -25; j <= 25; j += 1) {
+			x = i*2;
+			z = j*2;
+			y = vars.floor;
+			d = Math.sqrt(x * x + z * z);
+			point = R(x, y-d*d/85, z, vars);
+			if (point.d != -1) {
+				size = 1 + 15000 / (1 + point.d);
+				a = 0.15 - Math.pow(d / 50, 4) * 0.15;
+				if (a > 0) {
+					vars.ctx.fillStyle = colorString(interpolateColors(rgbArray(d/26-vars.frameNo/40),[0,128,32],.5+Math.sin(d/6-vars.frameNo/8)/2));
+					vars.ctx.globalAlpha = a;
+					vars.ctx.fillRect(point.x-size/2,point.y-size/2,size,size);
+				}
+			}
+		}
+	}		
+	vars.ctx.fillStyle = "#82f";
+	for (var i = -25; i <= 25; i += 1) {
+		for (var j = -25; j <= 25; j += 1) {
+			x = i*2;
+			z = j*2;
+			y = -vars.floor;
+			d = Math.sqrt(x * x + z * z);
+			point = R(x, y+d*d/85, z, vars);
+			if (point.d != -1) {
+				size = 1 + 15000 / (1 + point.d);
+				a = 0.15 - Math.pow(d / 50, 4) * 0.15;
+				if (a > 0) {
+					vars.ctx.fillStyle = colorString(interpolateColors(rgbArray(-d/26-vars.frameNo/40),[32,0,128],.5+Math.sin(-d/6-vars.frameNo/8)/2));
+					vars.ctx.globalAlpha = a;
+					vars.ctx.fillRect(point.x-size/2,point.y-size/2,size,size);
+				}
+			}
+		}
+	}		
+}
+
+function sortFunction(a,b){
+	return b.dist-a.dist;
+}
+
+function draw(vars){
+
+	vars.ctx.globalAlpha=.15;
+	vars.ctx.fillStyle="#000";
+	vars.ctx.fillRect(0, 0, vars.canvas.width, vars.canvas.height);
+	
+	drawFloor(vars);
+	
+	var point,x,y,z,a;
+	for(var i=0;i<vars.points.length;++i){
+		x=vars.points[i].x;
+		y=vars.points[i].y;
+		z=vars.points[i].z;
+		point=R(x,y,z,vars);
+		if(point.d != -1){
+			vars.points[i].dist=point.d;
+			size=1+vars.points[i].radius/(1+point.d);
+			d=Math.abs(vars.points[i].y);
+			a = .8 - Math.pow(d / (vars.vortexHeight/2), 1000) * .8;
+			vars.ctx.globalAlpha=a>=0&&a<=1?a:0;
+			vars.ctx.fillStyle=rgb(vars.points[i].color);
+			if(point.x>-1&&point.x<vars.canvas.width&&point.y>-1&&point.y<vars.canvas.height)vars.ctx.fillRect(point.x-size/2,point.y-size/2,size,size);
+		}
+	}
+	vars.points.sort(sortFunction);
+}
+
+
+function spawnParticle(vars){
+
+	var p,ls;
+	pt={};
+	p=Math.PI*2*Math.random();
+	ls=Math.sqrt(Math.random()*vars.distributionRadius);
+	pt.x=Math.sin(p)*ls;
+	pt.y=-vars.vortexHeight/2;
+	pt.vy=vars.initV/20+Math.random()*vars.initV;
+	pt.z=Math.cos(p)*ls;
+	pt.radius=200+800*Math.random();
+	pt.color=pt.radius/1000+vars.frameNo/250;
+	vars.points.push(pt);	
+}
+
+function frame(vars) {
+
+	if(vars === undefined){
+		var vars={};
+		vars.canvas = document.querySelector("#canvas2");
+		vars.ctx = vars.canvas.getContext("2d");
+		vars.canvas.width = 1920;
+		vars.canvas.height = 1080;
+		vars.frameNo=0;
+		vars.camX = 0;
+		vars.camY = 0;
+		vars.camZ = -14;
+		vars.pitch = elevation(vars.camX, vars.camZ, vars.camY) - Math.PI / 2;
+		vars.yaw = 0;
+		vars.cx=vars.canvas.width/2;
+		vars.cy=vars.canvas.height/2;
+		vars.bounding=10;
+		vars.scale=500;
+		vars.floor=26.5;
+
+		vars.points=[];
+		vars.initParticles=2000;
+		vars.initV=.01;
+		vars.distributionRadius=800;
+		vars.vortexHeight=25;
+	}
+
+	vars.frameNo++;
+	requestAnimationFrame(function() {
+		frame(vars);
+	});
+
+	process(vars);
+	draw(vars);
+}
+frame();
+		  </script>
+            <div class="text">
+				<hr>
+				The preceding tutorial was written by Scott McGann (cantelope), 10/5/2017. Special thanks to all those who have given me reasons to continue my work.
+            </div>
+    <div style="clear:both;"></div>
+    <br>
+    </div>
+	<br><br>
+    </body>
+</html>

@@ -7,7 +7,7 @@ html,body{
 
 body{
 	font-family:arial, tahoma;
-	background:#000 url(http://cantelope.org/puyopuyo/bg.jpg);
+	background:#000 url(bg.jpg);
 	background-size:100% 100%;
 	color:#fff;
 }
@@ -17,9 +17,9 @@ body{
 }
 @font-face {
     font-family: 'Square721';
-	src: url('http://cantelope.org/puyopuyo/TT0246M_.TTF') format('truetype'),
-		 url('http://cantelope.org/puyopuyo/TT0246M_.otf') format('opentype'),
-		 url('http://cantelope.org/puyopuyo/TT0246M_.woff') format('woff');
+	src: url('TT0246M_.TTF') format('truetype'),
+		 url('TT0246M_.otf') format('opentype'),
+		 url('TT0246M_.woff') format('woff');
 }
 #loadingOuter{
 	position:absolute;

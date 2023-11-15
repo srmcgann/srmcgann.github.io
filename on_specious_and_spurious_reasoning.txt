@@ -1,0 +1,14 @@
+On Specious and Spurious Reasoning
+Reasoning, using logic to draw conclusions, make decisions, discover truth, etc., is perhaps the most distinguishing characteristic of humans, which separates us from most animals, except perhaps dolphins and certain other primates. But even as capable as we are, the basic process of reasoning such that does not incorporate falsehood or involve wrong clauses (such as using 'and' when 'or' is called for), or including facts out of order, can result in wrong conclusions.
+
+Order of operations, following correct procedure in terms of priority of elements, and using correct clauses, is absolutely necessary for the reliability of any logical evaluation. For example: in arithmetic, multiplication and division must be performed before addition and subtraction, with respect to parenthetical containment. E.g. 4+2×6-3 = ? The answer is 13, possibly against intuition. Just as following order of operations in math is necessary, so too is it necessary in logic.
+
+Another example: "Most Border Collies are dogs that can jump through hoops." This statement is true, but if perchance, one was to reverse the elements, "Most dogs that can jump through hoops are Border Collies." The statement becomes false.
+
+The problem is that many people never learn to identify and preserve the order of things upon which truth depends, ultimately resulting in dissemination of wrong ideas and mutilated facts, which pull everyone off of truthful bases.
+
+Another example is usurping or misrepresenting causes, such as, "I told the cyclist to continue riding, and he did, therefore he followed my directions." Sometimes actions have multiple causal factors, but in this case, most likely, the cyclist already riding, would have continued regardless, making the statement false. Generally it is not possible to make someone "keep doing something." "I told the leaves to fall in autumn and they did!" ...etc. As with anything, practice helps gain proficiency , and logical reasoning is no different. Using logic in the course of vocation or education will strengthen ones aptitude for recognizing and implementing accurate logical truths.
+
+
+-end-
+

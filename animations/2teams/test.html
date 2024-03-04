@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Three.js Geometry Browser</title>
+		<style>
+			body {
+				margin:0;
+				font-size: 15px;
+				line-height: 18px;
+				overflow: hidden;
+			}
+
+			canvas { width: 100%; height: 100% }
+
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+
+			function colorHex(arr){
+
+				var r = parseInt(arr[0]*15);
+				var g = parseInt(arr[1]*15);
+				var b = parseInt(arr[2]*15);
+				return parseInt("0x"+r.toString(16)+r.toString(16)+g.toString(16)+g.toString(16)+b.toString(16)+b.toString(16));
+			}
+
+			function interpolateColors(RGB1,RGB2,degree){
+				
+				w1=degree;
+				w2=1-w1;
+				return colorHex([w1*RGB1[0]+w2*RGB2[0],w1*RGB1[1]+w2*RGB2[1],w1*RGB1[2]+w2*RGB2[2]]);
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function init(){
+				frames=0;
+				fisheye=.85;
+				camera = new THREE.PerspectiveCamera( 70/fisheye, window.innerWidth / window.innerHeight, 1, 100000 );
+				camera.position.z = 400;
+				camera.target = new THREE.Vector3(0, 0, 0);
+				scene = new THREE.Scene();
+
+				scene.add(new THREE.AmbientLight(0x505050));
+				var light = new THREE.SpotLight(0xffffff, 1.5);
+				light.position.set(0, 500, 200);
+				light.castShadow = true;
+				light.shadow.camera.near = 200;
+				light.shadow.camera.far = camera.far;
+				light.shadow.camera.fov = 50;
+				light.shadow.bias = - 0.000022;
+				light.shadow.mapSize.width = 2048;
+				light.shadow.mapSize.height = 2048;
+				scene.add(light);
+
+				renderer = new THREE.WebGLRenderer({antialias: true});
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+			var loader = new THREE.FontLoader();
+			loader.load( 'Square721 BT_Roman.json', function ( font ) {
+
+			  var textGeometry = new THREE.TextGeometry( "Blue Wins!", {
+				font: font,
+				size: 100,
+				height: 10,
+				curveSegments: 12,
+				bevelThickness: 1,
+				bevelSize: 1,
+				bevelEnabled: true
+			  });
+			  var textMaterial = new THREE.MeshPhongMaterial( 
+				{ color: 0x3300ff, specular: 0xffffff }
+			  );
+			  var mesh = new THREE.Mesh( textGeometry, textMaterial );
+			  scene.add( mesh );
+			});
+			function animate() {
+				frames++;
+				requestAnimationFrame(animate);
+				update();
+				render();
+			}
+			function render() {
+				renderer.setClearColor( interpolateColors([1,0,0],[0,0,0],.5+Math.sin(frames/10)/2) );
+				renderer.render(scene, camera);
+			}
+			function update() {
+			  camera.lookAt(camera.target);
+			  renderer.render(scene, camera);
+			}
+			init();
+			animate();
+		</script>
+	</body>
+</html>

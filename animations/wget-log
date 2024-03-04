@@ -1,0 +1,11 @@
+--2020-07-10 10:32:06--  https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F28%2F2016%2F12%2Fngc-6357-NASA1216.jpg
+Resolving imagesvc.meredithcorp.io (imagesvc.meredithcorp.io)... 99.84.252.25, 99.84.252.69, 99.84.252.22, ...
+Connecting to imagesvc.meredithcorp.io (imagesvc.meredithcorp.io)|99.84.252.25|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 462920 (452K) [image/jpeg]
+Saving to: ‘image?url=https:%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F28%2F2016%2F12%2Fngc-6357-NASA1216.jpg’
+
+                 image?url=https:   0%[                                                            ]       0  --.-KB/s               image?url=https:%2F%2Fstatic.onec 100%[===========================================================>] 452.07K  2.53MB/s    in 0.2s    
+
+2020-07-10 10:32:07 (2.53 MB/s) - ‘image?url=https:%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F28%2F2016%2F12%2Fngc-6357-NASA1216.jpg’ saved [462920/462920]
+
